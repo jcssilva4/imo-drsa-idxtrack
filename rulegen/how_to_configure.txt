@@ -1,0 +1,19 @@
+How to use the vcdomlem from the jRS lib trough python?
+
+You need to setup a local Gateway server to run the vcdomlem in a JVM through py4j.
+
+How to setup the Gateway server?
+
+1. Create a new java project
+   1.1 create the VCdomlemEntryPoint.java in the src folder
+   1.2 right-click project -> properties -> Java Build Path -> Libraries
+   1.3 JavaSE - 1.8 (this is the JRE version in which jRS works)
+   1.4 Try to run and check if Eclipse tries to build the application correctly (of course there will be errors, because the dependencies were not resolved)
+2. Set the plugins
+   2.1 All the plugins you need are in the vcdomlem/plugins folder
+   2.2 Right-click proj -> build path -> configure build path -> add External Jars
+   2.3 Select all the plugins in the vcdomlem/plugins folder
+3. Finally, add the py4j plugin
+   3.1 this plugin is available in the python lib folder (Python\Python37\share\py4j)
+   3.2 Copy the py4jcurrentVersion.jar to the vcdomlem/plugins folder 
+   3.3 Add py4j.jar to the build path
