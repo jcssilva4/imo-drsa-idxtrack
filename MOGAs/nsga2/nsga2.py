@@ -4,21 +4,21 @@ from MOGAs.nsga2.tools import *
 from MOGAs.nsga2.operators import *
 import seaborn as sns
 import matplotlib.pyplot as plt
-from result_analysis.plot_UEF import *
+#from result_analysis.plot_UEF import *
 import pandas as pd
+from models.TE_ER_tradeoff import *
+import time
 
-
-def nsga2(r_exp, r_var, k, indtrack, nGenerations = 5000):
+def nsga2(nIndividuals, rets, I, k, max_time):
 
 	CCEF = dict([])
 	ub,lb=1,0 
 	
 	# define your optimisation problem
-	nAssets = len(r_exp)
-	pref_dir = [-1, 1]
+	nAssets = rets.shape[0]
+	pref_dir = get_pref_dir()
 
 	# set real coded NSGA-II parameters
-	nIndividuals = 250;
 	p_c = 0.9 # crossover probability
 	p_m = 1/nAssets # mutation probability
 
@@ -26,33 +26,33 @@ def nsga2(r_exp, r_var, k, indtrack, nGenerations = 5000):
 	# get initial population
 	pop =  get_initial_pop(nIndividuals, nAssets, k)
 	R = pop
-
-	for gen in range(nGenerations):
-
-
-		print("generation: " + str(gen + 1))
+	
+	gen = 1
+	t_start = time.time()
+	#for gen in range(nGenerations):
+	while time.time() - t_start < max_time:
+		#print("generation: " + str(gen + 1))
 
 		##  new population P_(t+1) ##
 
 		# get fitness of R elements
-		fit = get_fitness_individuals(R, nAssets, r_exp, r_var)
+		fit = get_fitness_individuals(R, rets, I)
 		# non-dominated fronts over R (non-dominated sorting)
 		F = non_dominated_sort(fit, pref_dir) # - f1_pref_dir = -1 because f1 is risk (minimize) and f2_pref_dir = 1 because f2 is return (maximize)
 		# initialize the new population P_(t+1) 
 		P, lastFrontIdx = set_new_pop(F, nIndividuals)  # try to get better performance by not calculating any front when the new population is complete
-		f_max, f_min = get_normalization_coefs(F, fit, lastFrontIdx, len(pref_dir))
+		#f_max, f_min = get_normalization_coefs(F, fit, lastFrontIdx, len(pref_dir))
+		f_max, f_min = get_normalization_coefs()
 		# get crowd_distance rank and front rank
 		cdist, frank = front_dist_rank(f_max, f_min, F, fit, lastFrontIdx, len(pref_dir))
 		# set the final new population
 		P = set_new_pop(F, nIndividuals, cdist, lastFrontIdx, P) 
 
 		## new offspring Q_(t+1) ##
-
 		# initialize R_(t+1)
 		R_new = np.zeros((nIndividuals, 2*nAssets))
 		for ind in range(nIndividuals):
 			R_new[ind,:] = R[P[ind],:]
-
 		# binary tournament selection
 		mating_pool = bin_tournament_selection(P, frank, cdist)
 		# crossover
@@ -67,6 +67,10 @@ def nsga2(r_exp, r_var, k, indtrack, nGenerations = 5000):
 		for ind in range(R.shape[0]):
 			print("K = " + str(sum(R[ind,nAssets:2*nAssets])) + " and sum(w_i) = " + str(sum(R[ind,0:nAssets])) )
 		'''
+		gen += 1
+	
+	#print("generation: " + str(gen))
+	#print("time in secs: " + str(time.time()-t_start))
 
 	# get the frontier of the last population
 	CCEF = []

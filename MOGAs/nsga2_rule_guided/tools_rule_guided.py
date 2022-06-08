@@ -1,7 +1,10 @@
 import random
 import numpy as np
+from models.TE_ER_tradeoff import *
+from scipy.stats import norm
 
-def get_initial_pop(X, k, nAssets):
+
+def get_initial_pop_X(X, k, nAssets):
 
 	initialPop = np.zeros((X.shape[0], 2*nAssets))
 
@@ -13,7 +16,7 @@ def get_initial_pop(X, k, nAssets):
 		initialPop[individual, :] = final_sol[:]
 
 	return initialPop
-
+'''
 def get_initial_pop_prefconstr(X, nIndividuals, nAssets, k, r_exp, r_var, rule):
 
 	final_initial_pop = []
@@ -43,8 +46,7 @@ def get_initial_pop_prefconstr(X, nIndividuals, nAssets, k, r_exp, r_var, rule):
 		print("current init pop progress: " + str(len(final_initial_pop)/nIndividuals))
 
 	return np.array(final_initial_pop)
-
-
+'''
 def repair_vars(temp_var, k, nAssets, crossover = False, bug_ver = False):
 
 	if crossover:
@@ -103,6 +105,7 @@ def repair_weights(temp_var, nAssets):
 
 	return repaired
 
+
 def non_dominated_sort(fit, pref_dir):
 
 	F = [] # non-dominated fronts
@@ -138,60 +141,42 @@ def non_dominated_sort(fit, pref_dir):
 		# update the non-dominated fronts vec
 		F.append(f_temp)
 
-		'''
+		#
 		# save some computation by stopping the algorithm earlier
-		new_P = [] # simulates a new pop
-		for f in F: # loop over all current fronts
-			new_P.extend(f)
-		if(len(new_P) >= nIndividuals): 
-			evaluating = 0 # the number of fronts are sufficient to compute the new population
-		'''
+		#new_P = [] # simulates a new pop
+		#for f in F: # loop over all current fronts
+		#	new_P.extend(f)
+		#if(len(new_P) >= nIndividuals): 
+		#	evaluating = 0 # the number of fronts are sufficient to compute the new population
+		#
 
 	return F
 
-	
-def get_fitness_individuals(R, nAssets, r_exp, r_var):
-	# [f1 = risk, f2 = return]
-	fit = []
-	for individual in R:
-		fit.append([get_var(individual[:nAssets], r_var), get_mean(individual[:nAssets], r_exp)])
-	return fit
 
-def get_feasibility_individuals(R, nAssets, rule, fit):
+def get_feasibility_individuals(R, rule, drsa_eval):
 	feasibility = []
 	rule_objs = rule['obj']
 	rule_conds = rule['cond_dir']
 	rule_vals = rule['value']
-
-	#print(rule_objs)
-	#print(rule_conds)
-	#print(rule_vals)
-
 	for ind_idx in range(R.shape[0]): # loop over all individuals
 		rule_violation = 1 # assume that individual is a feasible solution (all feasible solutions have the same constr_violation = 1)
 		for cond_idx in range(len(rule_conds)): # loop over all rule conditions (constraints of the problem)
-			obj = 0 # assume the current obj is var
 			rhs = rule_vals[cond_idx] # get right hand side of the constraint
-
-			# compute the current constraint value for this individual
-			if rule_objs[cond_idx] == 'expRet':
-				obj = 1
-			current_constr_val = fit[ind_idx][obj] 
-
+			obj = rule_objs[cond_idx] # get the associated objective
+			current_constr_val = drsa_eval[ind_idx][obj] # get the current constr. value
 			# calculate the constr violation for this individual in this rule condition
 			constr_violation = 0
 			if rule_conds[cond_idx] == '<=':
 				constr_violation = rhs - current_constr_val
 			else:
 				constr_violation = current_constr_val - rhs
-
 			# check feasibility for this condition
 			if(constr_violation < 0): # infeasible solution 
+				#print("infeasible: " + str(constr_violation))
 				if rule_violation == 1: # initialize rule violation
 					rule_violation = constr_violation 
 				else: # increment rule violation
 					rule_violation += constr_violation 
-
 		feasibility.append(rule_violation)
 	return feasibility
 
@@ -205,13 +190,6 @@ def get_feasible_sols(feasibility):
 			feasible_sol_idxs.append(count)
 		count += 1
 	return feasible_sol_idxs
-
-def get_mean(weights, r_exp):
-	return np.dot(weights, r_exp)
-
-def get_var(weights, r_var):
-	first_mult = weights @ r_var # @ performs matrix product
-	return first_mult @ weights
 
 
 def set_new_pop(F, nIndividuals, cdist = None, lastFrontIdx = None, P = []):
@@ -249,6 +227,7 @@ def set_new_pop(F, nIndividuals, cdist = None, lastFrontIdx = None, P = []):
 		return new_P
 
 
+'''
 def get_normalization_coefs(F, fit, lastFrontIdx, nObjectives):
 
 	temp_pop_idxs = []
@@ -275,6 +254,7 @@ def get_normalization_coefs(F, fit, lastFrontIdx, nObjectives):
 
 	return [1,1], [0,0]
 
+'''
 def front_dist_rank(f_max, f_min, F, fit, lastFrontIdx, nObjectives):
 
 	inf_const = 1e16 # represents a big number
@@ -315,6 +295,41 @@ def front_dist_rank(f_max, f_min, F, fit, lastFrontIdx, nObjectives):
 					count += 1
 
 	return cdist, frank
+
+def get_drsa_eval(R, rets, I, DT_presentation):
+	drsa_eval = []
+	prob1 = 0.99
+	prob50 = 0.5
+	prob99 = 0.01
+	if DT_presentation == 'visual':
+		drsa_eval = get_fitness_individuals(R, rets, I)
+	if DT_presentation in ['par_quant','nonpar_quant']:
+		for individual in R:
+			weights = individual[:rets.shape[0]]
+			portfolio_ret = weights @ rets
+			ER = portfolio_ret - I
+			TE = np.abs(ER)
+			TE1 = 0
+			TE50 = 0
+			ER1 = 0
+			ER50 = 0
+			ER99 = 0
+			minER = 0
+			if DT_presentation == 'par_quant':
+				TE1 = norm.ppf(prob1, loc=np.mean(TE), scale=np.std(TE))
+				TE50 = norm.ppf(prob50, loc=np.mean(TE), scale=np.std(TE))
+				ER1 = norm.ppf(prob1, loc=np.mean(ER), scale=np.std(ER))
+				ER50 = norm.ppf(prob50, loc=np.mean(ER), scale=np.std(ER))
+				ER99 = norm.ppf(prob99, loc=np.mean(ER), scale=np.std(ER))
+			else:
+				TE1 = np.quantile(TE,prob1)
+				TE50 = np.quantile(TE,prob50)
+				ER1 = np.quantile(ER,prob1)
+				ER50 =  np.quantile(ER,prob50)
+				ER99 = np.quantile(ER,prob99)
+			drsa_eval.append([TE1, TE50, ER1, ER50, ER99])
+
+	return drsa_eval
 	
 
 	

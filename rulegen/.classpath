@@ -11,5 +11,10 @@
 	<classpathentry kind="lib" path="G:/Meu Drive/DO_JulioCSS/Artigos/2022/Journal/IMO_DRSA/code/rulegen/plugins/py4j0.10.9.5.jar"/>
 	<classpathentry kind="lib" path="G:/Meu Drive/DO_JulioCSS/Artigos/2022/Journal/IMO_DRSA/code/rulegen/plugins/trove-2.0.1 rc1.jar"/>
 	<classpathentry kind="lib" path="G:/Meu Drive/DO_JulioCSS/Artigos/2022/Journal/IMO_DRSA/code/rulegen/plugins/xsltc.jar"/>
+	<classpathentry kind="lib" path="G:/Meu Drive/DO_JulioCSS/Artigos/2022/Journal/DRSA_idx_track/new_code/imo-drsa-idxtrack/rulegen/plugins/ForemkaCore_3.1.0.jar"/>
+	<classpathentry kind="lib" path="G:/Meu Drive/DO_JulioCSS/Artigos/2022/Journal/DRSA_idx_track/new_code/imo-drsa-idxtrack/rulegen/plugins/jRS.jar"/>
+	<classpathentry kind="lib" path="G:/Meu Drive/DO_JulioCSS/Artigos/2022/Journal/DRSA_idx_track/new_code/imo-drsa-idxtrack/rulegen/plugins/py4j0.10.9.5.jar"/>
+	<classpathentry kind="lib" path="G:/Meu Drive/DO_JulioCSS/Artigos/2022/Journal/DRSA_idx_track/new_code/imo-drsa-idxtrack/rulegen/plugins/trove-2.0.1 rc1.jar"/>
+	<classpathentry kind="lib" path="G:/Meu Drive/DO_JulioCSS/Artigos/2022/Journal/DRSA_idx_track/new_code/imo-drsa-idxtrack/rulegen/plugins/xsltc.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

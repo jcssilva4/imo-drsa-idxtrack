@@ -1,6 +1,5 @@
 import numpy as np
 import itertools as it
-import cplex as cp
 
 def solve_MV(r_exp, r_var, n_points):
 

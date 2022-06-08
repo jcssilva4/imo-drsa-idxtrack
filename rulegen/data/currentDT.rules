@@ -1,0 +1,78 @@
+[FILEINFO]
+Program: jrs
+Algorithm: VC-DOMLEM
+DataFileDirectory: G:\Meu Drive\DO_JulioCSS\Artigos\2022\Journal\DRSA_idx_track\new_code\imo-drsa-idxtrack\rulegen\data
+DataFileName: currentDT.isf
+Objects: 6
+Decision: d
+Duration: 60 [ms]
+Comment: Rules generated with VC-DOMLEM algorithm
+
+[PARAMETERS]
+RulesFormat: INFORMATION_TABLE_PARETO
+ConsistencyLevel: 1.0
+Classes: other, good
+
+[ATTRIBUTES]
++ TE1: (continuous), cost
++ TE50: (continuous), cost
++ ER1: (continuous), gain
++ ER50: (continuous), gain
++ ER99: (continuous), gain
++ d: [other, good], gain, decision
+
+decision: d
+
+[PREFERENCES]
+TE1: cost
+TE50: cost
+ER1: gain
+ER50: gain
+ER99: gain
+d: gain
+
+[RULES]
+#Possible at least rules
+1:  => (d >= good) |POSSIBLE, AT_LEAST, good|
+#Possible at most rules
+2:  => (d <= other) |POSSIBLE, AT_MOST, other|
+
+[RULESINFO]
+#Possible at least rules
+1:  => (d >= good) |POSSIBLE, AT_LEAST, good|
+LearningPositiveExamples: 1, 2, 3, 4, 5, 6
+Support: 3
+SupportingExamples: 1, 2, 3
+Strength: 0.5
+Confidence: 0.5
+CoverageFactor: 1.0
+Coverage: 6
+CoveredExamples: 1, 2, 3, 4, 5, 6
+NegativeCoverage: 3
+NegativeCoveredExamples: 4, 5, 6
+InconsistencyMeasure: 1.0
+EpsilonPrimMeasure: 1.0
+f-ConfirmationMeasure: 0.0
+A-ConfirmationMeasure: NaN
+Z-ConfirmationMeasure: 0.0
+l-ConfirmationMeasure: 0.0
+
+#Possible at most rules
+2:  => (d <= other) |POSSIBLE, AT_MOST, other|
+LearningPositiveExamples: 1, 2, 3, 4, 5, 6
+Support: 3
+SupportingExamples: 4, 5, 6
+Strength: 0.5
+Confidence: 0.5
+CoverageFactor: 1.0
+Coverage: 6
+CoveredExamples: 1, 2, 3, 4, 5, 6
+NegativeCoverage: 3
+NegativeCoveredExamples: 1, 2, 3
+InconsistencyMeasure: 1.0
+EpsilonPrimMeasure: 1.0
+f-ConfirmationMeasure: 0.0
+A-ConfirmationMeasure: NaN
+Z-ConfirmationMeasure: 0.0
+l-ConfirmationMeasure: 0.0
+

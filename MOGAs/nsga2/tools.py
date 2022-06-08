@@ -1,5 +1,7 @@
 import random
 import numpy as np
+from models.TE_ER_tradeoff import *
+
 
 def get_initial_pop(nIndividuals, nAssets, k):
 
@@ -121,21 +123,6 @@ def non_dominated_sort(fit, pref_dir):
 
 	return F
 
-	
-def get_fitness_individuals(R, nAssets, r_exp, r_var):
-	# [f1 = risk, f2 = return]
-	fit = []
-	for individual in R:
-		fit.append([get_var(individual[:nAssets], r_var), get_mean(individual[:nAssets], r_exp)])
-	return fit
-
-def get_mean(weights, r_exp):
-	return np.dot(weights, r_exp)
-
-def get_var(weights, r_var):
-	first_mult = weights @ r_var # @ performs matrix product
-	return first_mult @ weights
-
 
 def set_new_pop(F, nIndividuals, cdist = None, lastFrontIdx = None, P = []):
 
@@ -170,33 +157,6 @@ def set_new_pop(F, nIndividuals, cdist = None, lastFrontIdx = None, P = []):
 		#print("final_P: " + str(new_P))
 
 		return new_P
-
-
-def get_normalization_coefs(F, fit, lastFrontIdx, nObjectives):
-
-	temp_pop_idxs = []
-	fit_obj = dict([])
-	f_max = [] # contains the population-maximum for each obj
-	f_min = [] # contains the population-minimum for each obj
-
-	for i in range(lastFrontIdx + 1):
-		temp_pop_idxs.extend(F[i])
-
-	# initialize fit_obj
-	for obj in range(nObjectives):
-		fit_obj[obj] = []
-	
-	# get fit vectors for each obj func of solutions contained in F[0:lastFronIdx]
-	for p in temp_pop_idxs:
-		for obj in range(nObjectives):
-			fit_obj[obj].append(fit[p][obj])
-
-	# get f_max, f_min
-	for obj in range(nObjectives):
-		f_max.append(max(fit_obj[obj]))
-		f_min.append(min(fit_obj[obj]))
-
-	return [1,1], [0,0]
 
 def front_dist_rank(f_max, f_min, F, fit, lastFrontIdx, nObjectives):
 

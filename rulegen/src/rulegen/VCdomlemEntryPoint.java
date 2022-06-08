@@ -82,17 +82,22 @@ public class VCdomlemEntryPoint {
 			ArrayList<Rule> certainAtMost = rulesContainer.getRules(0,4);
 			//String[] allRules = new String[certainAtLeast.size() + certainAtMost.size()];
 			//int ruleCounter = 0;
-			Iterator rulesIt = (Iterator) certainAtLeast.iterator();
-			while (rulesIt.hasNext()) {
-				Rule rule = (Rule) rulesIt.next();
-		    	System.out.println(rule.toShortString());
-		    	allRules.add(rule.toShortString());
+			Iterator rulesIt;
+			if (certainAtLeast.size() > 0){
+			rulesIt = (Iterator) certainAtLeast.iterator();
+				while (rulesIt.hasNext()) {
+					Rule rule = (Rule) rulesIt.next();
+			    	System.out.println(rule.toShortString());
+			    	allRules.add(rule.toShortString());
+				}
 			}
-			rulesIt = (Iterator) certainAtMost.iterator();
-			while (rulesIt.hasNext()) {
-				Rule rule = (Rule) rulesIt.next();
-		    	System.out.println(rule.toShortString());
-		    	allRules.add(rule.toShortString());
+			if (certainAtMost.size() > 0){
+				rulesIt = (Iterator) certainAtMost.iterator();
+				while (rulesIt.hasNext()) {
+					Rule rule = (Rule) rulesIt.next();
+			    	System.out.println(rule.toShortString());
+			    	allRules.add(rule.toShortString());
+				}
 			}
 			/*
 			System.out.println("writting rules...");

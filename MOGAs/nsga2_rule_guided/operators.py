@@ -4,7 +4,6 @@ from MOGAs.nsga2_rule_guided.tools_rule_guided import *
 
 # constraint domination included here...
 def bin_tournament_selection(P, frank, feasibility, cdist):
-
 	mating_pool = []
 	
 	# select samples so that each solution participates in two tournaments
@@ -68,9 +67,9 @@ def uniform_crossover_chang(mating_pool, R, nAssets, k, nIndividuals, p_c): # ch
 		if random.uniform(0,1) < p_c: # perform crossover?
 			#print("p1: " + str(R[parent1, nAssets:2*nAssets]))
 			#print("p2: " + str(R[parent2, nAssets:2*nAssets]))
+			temp_Q = R[parent1,:].copy() # copy everything from parent1 to the single offspring
 			for x in range(nAssets, 2*nAssets):
 				#if random.uniform(0,1) < p_c: # select which bit to exchange
-				temp_Q = R[parent1,:].copy() # copy everything from parent1 to the single offspring
 				temp_val_p1 = R[parent1, x]
 				temp_val_p2 = R[parent2, x]
 				if(temp_val_p2 != temp_val_p1): #this asset do not belong to both parents
@@ -90,7 +89,7 @@ def santanna_mutation(Q, nAssets, nIndividuals, num_mut, p_m):
 	ind = 0
 	Q_final = np.zeros((len(Q), 2*nAssets))
 	for ind in range(len(Q)): # loop over all the children
-		#'''
+		#
 		if (random.uniform(0,1) < p_m): 
 			#print("before mutation: " + str(Q[ind][nAssets:2*nAssets]))
 			# mutate this ind
@@ -111,9 +110,9 @@ def santanna_mutation(Q, nAssets, nIndividuals, num_mut, p_m):
 
 			#print("after mutation: " + str(Q[ind][nAssets:2*nAssets]))
 			psize = np.sum(Q[ind][nAssets:2*nAssets])
-			if(psize!=10):
-				print("K = " + str(psize))
-		#'''
+			#if(psize!=10):
+				#print("K = " + str(psize))
+		#
 		## gaussian mutation for the weights ##
 		# correct zero weights and mutate weights
 		temp_var = Q[ind][:]
@@ -136,5 +135,6 @@ def santanna_mutation(Q, nAssets, nIndividuals, num_mut, p_m):
 		Q_final[ind,:] = repaired[:]
 
 	return Q_final
+
 
 	

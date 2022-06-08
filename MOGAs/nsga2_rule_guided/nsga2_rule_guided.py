@@ -5,46 +5,50 @@ from MOGAs.nsga2_rule_guided.operators import *
 import seaborn as sns
 import matplotlib.pyplot as plt
 import pandas as pd
+from models.TE_ER_tradeoff import *
+import time
 
 
-def nsga2_rule_guided(gamma, init_pop_X, rule, r_exp, r_var, k, indtrack, nGenerations = 1):
+def nsga2_rule_guided(nIndividuals, init_pop_X, rule, rets, I, k, DT_presentation, max_time):
 
 	CCEF = dict([])
 	ub,lb=1,0 
-	
+
 	# define your optimisation problem
-	nAssets = len(r_exp)
-	pref_dir = [-1, 1]
+	nAssets = rets.shape[0]
+	pref_dir = get_pref_dir()
 
 	# set real coded NSGA-II parameters
-	nIndividuals = 250;
 	p_c = 0.9 # crossover probability
 	p_m = 1/nAssets # mutation probability
 
 
 	# get initial population
-	pop =  get_initial_pop(init_pop_X, k, nAssets)
+	pop =  get_initial_pop_X(init_pop_X, k, nAssets)
 	#pop = get_initial_pop_prefconstr(init_pop_X,nIndividuals, nAssets, k, r_exp, r_var, rule)
 	R = pop
 	gen = 1
 	X_f = [] # X's feasible solutions
 	F0_final = [] # X's non-dominated feasible solutions
-	while len(F0_final)/nIndividuals < gamma:
-
+	t_start = time.time()
+	#while len(F0_final)/nIndividuals < gamma_current:
+	while time.time() - t_start < max_time:
 		##  new population P_(t+1) ##
-
 		# get fitness and feasibility of R elements
-		fit = get_fitness_individuals(R, nAssets, r_exp, r_var)
-		feasibility = get_feasibility_individuals(R, nAssets, rule, fit)
+		fit = get_fitness_individuals(R, rets, I)
+		drsa_eval =  get_drsa_eval(R, rets, I, DT_presentation)
+		feasibility = get_feasibility_individuals(R, rule, drsa_eval)
 		# non-dominated fronts over R (non-dominated sorting)
 		F = non_dominated_sort(fit, pref_dir) # - f1_pref_dir = -1 because f1 is risk (minimize) and f2_pref_dir = 1 because f2 is return (maximize)
 		# initialize the new population P_(t+1) 
 		P, lastFrontIdx = set_new_pop(F, nIndividuals)  # try to get better performance by not calculating any front when the new population is complete
-		f_max, f_min = get_normalization_coefs(F, fit, lastFrontIdx, len(pref_dir))
+		#f_max, f_min = get_normalization_coefs(F, fit, lastFrontIdx, len(pref_dir))
+		f_max, f_min = get_normalization_coefs()
 		# get crowd_distance rank and front rank
 		cdist, frank = front_dist_rank(f_max, f_min, F, fit, lastFrontIdx, len(pref_dir))
 		# set the final new population
-		P = set_new_pop(F, nIndividuals, cdist, lastFrontIdx, P) 
+		#P = set_new_pop(F, nIndividuals, cdist, lastFrontIdx, P) 
+		P = set_new_pop(F, nIndividuals, feasibility, lastFrontIdx, P) 
 
 		## new offspring Q_(t+1) ##
 
@@ -58,7 +62,8 @@ def nsga2_rule_guided(gamma, init_pop_X, rule, r_exp, r_var, k, indtrack, nGener
 			fit_final.append(fit[P[ind]])
 
 		F0_final = []
-		for ind in F[0]:
+		#for ind in F[0]:
+		for ind in P:
 			if feasibility[ind] == 1:
 				F0_final.append(ind)
 
@@ -75,10 +80,12 @@ def nsga2_rule_guided(gamma, init_pop_X, rule, r_exp, r_var, k, indtrack, nGener
 		R = np.concatenate((R_new, Q))
 
 		X_f = get_feasible_sols(feasibility_final)
-		print("generation: " + str(gen))
-		print("|X_f_F[0]|/|X|: " + str(len(F0_final)/nIndividuals))
-		print("|F[0]| = " + str(len(F0_final)))
 		gen += 1
+
+	#print("generation: " + str(gen))
+	#print("time in secs: " + str(time.time()-t_start))
+	#print("|X_f_F[0]|/|X|: " + str(len(F0_final)/nIndividuals))
+	#print("feasible -> |F[0]| = " + str(len(F0_final)))
 
 	# get the frontier of the last population
 	CCEF = []
@@ -93,7 +100,6 @@ def nsga2_rule_guided(gamma, init_pop_X, rule, r_exp, r_var, k, indtrack, nGener
 	#print("plot")
 	#print(CCEF)
 	#plot_frontier(CCEF, indtrack, k)
-
 	return CCEF, np.array(final_sol), final_feasible
 
 
