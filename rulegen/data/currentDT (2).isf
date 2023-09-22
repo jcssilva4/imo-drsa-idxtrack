@@ -1,0 +1,26 @@
+**ATTRIBUTES
+
++ TE1: (continuous),cost
++ TE50: (continuous),cost
++ ER1: (continuous),gain
++ ER50: (continuous),gain
++ ER99: (continuous),gain
++ d: [other, good], gain, decision
+
+decision: d
+
+**PREFERENCES
+
+TE1: cost
+TE50: cost
+ER1: gain
+ER50: gain
+ER99: gain
+
+**EXAMPLES
+
+portfolio_1: 0.1142514935472371, 0.03774509839464447, 0.12177488988730975, 0.0062126538738902296, -0.1093495821395293, good
+portfolio_2: 0.1142514935472371, 0.03774509839464447, 0.12177488988730975, 0.0062126538738902296, -0.1093495821395293, good
+portfolio_3: 0.1142514935472371, 0.03774509839464447, 0.12177488988730975, 0.0062126538738902296, -0.1093495821395293, good
+
+**END

@@ -1,0 +1,7 @@
+1. Criar nova pasta
+2. Estudar código
+2.1 Alterar função pref: Chebyshev -> get_pref_func, get_pref_func_rebal
+2.2 Verificar como os resultados estão sendo escritos
+2.3 Rodar aqueles exemplos novamente para gerar a tabela com exemplos e figura com exemplos
+2.4 Gerar novamente as figuras dos resultados
+2.5 Como incorporar testes estatísticos? -> gerar tabelas associadas?

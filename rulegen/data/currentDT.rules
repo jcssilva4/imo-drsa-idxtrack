@@ -1,0 +1,57 @@
+[FILEINFO]
+Program: jrs
+Algorithm: VC-DOMLEM
+DataFileDirectory: G:\.shortcut-targets-by-id\1-46_TU1FDEyszuOHcBzedRU_TbdXp9qc\Jobs_JCSS\codigo_rev1\rulegen\data
+DataFileName: currentDT.isf
+Objects: 6
+Decision: d
+Duration: 0 [ms]
+Comment: Rules generated with VC-DOMLEM algorithm
+
+[PARAMETERS]
+RulesFormat: INFORMATION_TABLE_PARETO
+ConsistencyLevel: 1.0
+Classes: other, good
+
+[ATTRIBUTES]
++ TE1: (continuous), cost
++ TE50: (continuous), cost
++ ER1: (continuous), gain
++ ER50: (continuous), gain
++ ER99: (continuous), gain
++ d: [other, good], gain, decision
+
+decision: d
+
+[PREFERENCES]
+TE1: cost
+TE50: cost
+ER1: gain
+ER50: gain
+ER99: gain
+d: gain
+
+[RULES]
+#Certain at most rules
+1: (ER1 <= 0.1142199995215552) => (d <= other) |CERTAIN, AT_MOST, other|
+
+[RULESINFO]
+#Certain at most rules
+1: (ER1 <= 0.1142199995215552) => (d <= other) |CERTAIN, AT_MOST, other|
+LearningPositiveExamples: 5, 6
+Support: 2
+SupportingExamples: 5, 6
+Strength: 0.3333333333333333
+Confidence: 1.0
+CoverageFactor: 0.6666666666666666
+Coverage: 2
+CoveredExamples: 5, 6
+NegativeCoverage: 0
+NegativeCoveredExamples: 
+InconsistencyMeasure: 0.0
+EpsilonPrimMeasure: 0.0
+f-ConfirmationMeasure: 1.0
+A-ConfirmationMeasure: 0.5
+Z-ConfirmationMeasure: 1.0
+l-ConfirmationMeasure: Infinity
+
